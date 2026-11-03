@@ -1,0 +1,152 @@
+name: Complete Lab 10 using real Kaggle English-French data
+on:
+  push:
+    paths:
+      - '.github/workflows/lab10-kaggle.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  execute-lab:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install notebook and TensorFlow CPU dependencies
+        run: python -m pip install --quiet tensorflow-cpu==2.19.1 nbformat nbclient ipykernel pandas numpy scikit-learn matplotlib
+      - name: Download public corpus and execute lab notebook
+        run: |
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          from urllib.request import Request, urlopen
+          from zipfile import ZipFile, is_zipfile
+          import nbformat
+          from nbclient import NotebookClient
+          
+          p = Path('Lab10_Machine_Translation_Completed_Mohammad_Alnaghmoush.ipynb')
+          kaggle_url = 'https://www.kaggle.com/api/v1/datasets/download/devicharith/language-translation-englishfrench'
+          author_url = 'https://raw.githubusercontent.com/Devicharith/Language_translation-english-french-/master/fra-eng.zip'
+          Path('datasets').mkdir(exist_ok=True)
+          errors = []
+          downloaded_zip = Path('datasets/kaggle_english_french.zip')
+          source_url = kaggle_url
+          for url in [kaggle_url, author_url]:
+              try:
+                  print('Downloading:', url, flush=True)
+                  req = Request(url, headers={'User-Agent':'Mozilla/5.0'})
+                  with urlopen(req, timeout=120) as r:
+                      downloaded_zip.write_bytes(r.read())
+                  if not is_zipfile(downloaded_zip):
+                      raise ValueError('Response is not a ZIP archive')
+                  source_url = url
+                  break
+              except Exception as exc:
+                  print('Source unavailable:', repr(exc), flush=True)
+                  errors.append(str(exc))
+          else:
+              raise RuntimeError('Could not download Kaggle dataset or the Kaggle uploader mirror: ' + '; '.join(errors))
+          with ZipFile(downloaded_zip) as zipfile:
+              members=[n for n in zipfile.namelist() if not n.endswith('/')]
+              csvs=[n for n in members if n.lower().endswith('.csv')]
+              txts=[n for n in members if n.lower().endswith('.txt') and ('fra' in n.lower() or 'eng' in n.lower())]
+              if csvs:
+                  member=next((n for n in csvs if 'french' in n.lower()),csvs[0])
+                  filepath=Path('eng_-french.csv')
+              elif txts:
+                  member=next((n for n in txts if n.lower().endswith('fra.txt')),txts[0])
+                  filepath=Path('fra.txt')
+              else:
+                  raise ValueError('Unexpected dataset archive: '+repr(members[:15]))
+              filepath.write_bytes(zipfile.read(member))
+          print('Dataset extracted:', str(filepath), 'size:', filepath.stat().st_size, 'source:', source_url, flush=True)
+          
+          nb = nbformat.read(p, as_version=4)
+          assert '2230004028' in nb.cells[0].source
+          nb.cells[17].source = (
+              '### Task 2 — English–French translation using REAL Kaggle sentence pairs\n\n'
+              '**Source:** [Devicharith English–French translation dataset on Kaggle]('
+              'https://www.kaggle.com/datasets/devicharith/language-translation-englishfrench).\n\n'
+              '**Actual download location used for this run:** '+source_url+'\n\n'
+              'The data was downloaded and read from a real bilingual corpus, not from synthetic examples. '
+              'The training baseline samples up to 1,200 pairs from the first 3,000 rows of that downloaded corpus '
+              'for a CPU-feasible exercise, and uses a held-out 20% test set. '
+              'The source is a general bilingual corpus, **not** a product/e-commerce-specific corpus. '
+              'Model outputs and test metrics are included below.'
+          )
+          nb.cells[18].source = (
+              "# Task 2: Load English–French pairs from the ACTUAL downloaded dataset.\n"
+              "from pathlib import Path\n"
+              "import pandas as pd\n"
+              "kaggle_file = Path("+repr(str(filepath))+")\n"
+              "dataset_source = "+repr(source_url)+"\n"
+              "if kaggle_file.suffix.lower() == '.txt':\n"
+              "    pairs_df = pd.read_csv(kaggle_file, sep='\\\\t', header=None, usecols=[0,1], "
+              "names=['english','french'], nrows=3000, on_bad_lines='skip')\n"
+              "else:\n"
+              "    raw_csv = pd.read_csv(kaggle_file, nrows=3000, encoding_errors='replace', on_bad_lines='skip')\n"
+              "    en_col = next((c for c in raw_csv.columns if 'english' in str(c).lower()), raw_csv.columns[0])\n"
+              "    fr_col = next((c for c in raw_csv.columns if 'french' in str(c).lower()), raw_csv.columns[1])\n"
+              "    pairs_df = raw_csv[[en_col, fr_col]].copy()\n"
+              "    pairs_df.columns = ['english','french']\n"
+              "pairs_df = pairs_df.dropna().copy()\n"
+              "pairs_df['english'] = pairs_df['english'].astype(str).str.strip()\n"
+              "pairs_df['french'] = pairs_df['french'].astype(str).str.strip()\n"
+              "pairs_df = pairs_df[(pairs_df.english != '') & (pairs_df.french != '')]\n"
+              "pairs_df = pairs_df.drop_duplicates(['english','french'])\n"
+              "if len(pairs_df) > 1200:\n"
+              "    pairs_df = pairs_df.sample(n=1200, random_state=42)\n"
+              "pairs_df = pairs_df.reset_index(drop=True)\n"
+              "assert len(pairs_df) >= 100, 'Expected at least 100 bilingual pairs from real dataset'\n"
+              "print('Dataset source:', dataset_source)\n"
+              "print('Corpus sample pairs:', len(pairs_df))\n"
+              "print(pairs_df.head(5).to_string(index=False))\n"
+          )
+          nb.cells[23].source = (
+              '### Task 2: Findings and limitations\n\n'
+              '- **Data source:** '+source_url+'. This file is extracted from the real bilingual corpus.\n'
+              '- **Training subset:** Up to 1,200 distinct pairs out of the first 3,000 corpus records are used '
+              'for an affordable CPU training run (the full original corpus was not trained end-to-end).\n'
+              '- **Evaluation:** 80% train and 20% held-out test. The accuracy excludes padding tokens, '
+              'and exact sentence match is also reported. Token accuracy is not a substitute for translation quality.\n'
+              '- **E-commerce:** The corpus is general-domain; translating shopping-related text well would require '
+              'domain-specific parallel data, stronger encoder–decoder or Transformer architecture, '
+              'and human evaluation of product descriptions and customer reviews.\n'
+              '- **No fallback dataset:** No manually written examples were used for Task 2 in this execution.'
+          )
+          for i in range(18,23):
+              nb.cells[i]['execution_count'] = None
+              nb.cells[i]['outputs'] = []
+              nb.cells[i]['metadata'].pop('execution',None)
+          nbformat.write(nb,p)
+          print('Executing notebook on real corpus...',flush=True)
+          os.environ['OMP_NUM_THREADS']='2'
+          client = NotebookClient(nb, timeout=1800, kernel_name='python3',
+                                  resources={'metadata': {'path': '.'}})
+          result = client.execute()
+          nbformat.validate(result)
+          nbformat.write(result,p)
+          codes=[c for c in result.cells if c.cell_type=='code']
+          assert all(c.execution_count is not None for c in codes)
+          assert not [o for c in codes for o in c.get('outputs',[]) if o.output_type=='error']
+          print('Notebook executed and validated:',len(codes),'code cells, with real data.',flush=True)
+          for item in result.cells[18].get('outputs',[]):
+              if item.output_type=='stream':
+                  print(item.text[:4000],flush=True)
+          for item in result.cells[21].get('outputs',[]):
+              if item.output_type=='stream':
+                  print(item.text[:4000],flush=True)
+          
+          PY
+      - name: Commit executed notebook
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add Lab10_Machine_Translation_Completed_Mohammad_Alnaghmoush.ipynb
+          git diff --cached --quiet || git commit -m 'Run Lab 10 on real Kaggle English-French pairs and save outputs'
+          git push
