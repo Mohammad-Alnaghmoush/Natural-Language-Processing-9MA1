@@ -1,0 +1,30 @@
+name: Run Lab 11 Attention Notebook
+on:
+  push:
+    paths:
+      - '.github/workflows/lab11-attention.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  run-lab:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+          pip install pandas numpy matplotlib nbformat nbclient ipykernel
+      - name: Execute notebook
+        run: python Lab11_Attention_with_RNN/execute_lab11.py
+      - name: Save outputs
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add Lab11_Attention_with_RNN/Lab11_Attention_RNN_Completed_Mohammad_Alnaghmoush.ipynb
+          git diff --cached --quiet || git commit -m 'Save executed Lab 11 attention task outputs'
+          git push
