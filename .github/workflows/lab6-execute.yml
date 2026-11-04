@@ -3,6 +3,7 @@ on:
   push:
     paths:
       - '.github/workflows/lab6-execute.yml'
+      - 'execute_lab6.py'
   workflow_dispatch:
 permissions:
   contents: write
