@@ -15,7 +15,7 @@ print("Verified Yelp data:", len(frame), "genuine reviews.")
 paths = [root / "lab6_NLP.ipynb", root / "lab6__NLP.ipynb"]
 for path in paths:
     nb = nbformat.read(path, as_version=4)
-    assert "2230004028" in nb.cells[0].source
+    assert any("2230004028" in c.source for c in nb.cells if c.cell_type == "code")
     nb.metadata["kernelspec"] = {"display_name": "Python 3", "language": "python", "name": "python3"}
     result = NotebookClient(nb, timeout=1000, kernel_name="python3",
                             resources={"metadata": {"path": str(root)}}).execute()
