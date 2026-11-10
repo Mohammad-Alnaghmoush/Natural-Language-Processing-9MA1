@@ -1,10 +1,10 @@
-# Natural Language Processing — Labs 1–11
+# Natural Language Processing — Labs 1–12
 
 **Student:** Mohammad Abdalrouf Alnaghmoush  
 **Student ID:** 2230004028  
 **Course repository:** Natural Language Processing (9MA1)
 
-All eleven numbered labs are available as Jupyter notebooks with their **actual saved execution outputs**. Open any `.ipynb` file directly on GitHub to view printed results, tables, and embedded plots without running the notebook.
+All twelve numbered labs are available as Jupyter notebooks with their **actual saved execution outputs**. Open any `.ipynb` file directly on GitHub to view printed results, tables, and embedded plots without running the notebook.
 
 ## Notebook submission index
 
@@ -22,8 +22,9 @@ All eleven numbered labs are available as Jupyter notebooks with their **actual 
 | [Lab 9](Lab9_NER_Completed_Mohammad_Alnaghmoush.ipynb) | 8/8 | 7 | 0 |
 | [Lab 10](Lab10_Machine_Translation_Completed_Mohammad_Alnaghmoush.ipynb) | 13/13 | 12 | 1 |
 | [Lab 11](Lab11_Attention_with_RNN/Lab11_Attention_RNN_Completed_Mohammad_Alnaghmoush.ipynb) | 9/9 | 8 | 4 |
+| [Lab 12](Lab12_Transformers_Completed_Mohammad_Alnaghmoush.ipynb) | 10/10 | 8 | 1 |
 
-*Audit checked on November 4, 2026. The repository contains twelve notebooks because Lab 6 has two versions. All nonempty code cells were executed; no recorded cell errors remain.*
+*Labs 1–11 were audited on November 4, 2026. Lab 12 was executed and verified on November 10, 2026. The repository contains thirteen notebooks because Lab 6 has two versions. All nonempty code cells are executed and no recorded cell errors remain.*
 
 ## Dataset and reproduction notes
 
@@ -38,6 +39,7 @@ All eleven numbered labs are available as Jupyter notebooks with their **actual 
 - **Lab 9:** Entity recognition outputs and 20 iterations of training a custom spaCy NER model are saved. Rule-based demonstration inputs are identified in the notebook.
 - **Lab 10:** Outputs were executed on 1,200 real English–French sentence pairs downloaded from the public Kaggle corpus; results are for a small educational model, not a production translator.
 - **Lab 11:** Uses the included [original Q&A dataset](Lab11_Attention_with_RNN/dataset/Lab_11_QnA_Dataset.csv) (168 examples); training results and attention visualizations are saved.
+- **Lab 12:** Uses real pretrained Hugging Face `distilbert-base-uncased-finetuned-sst-2-english` and `bert-base-uncased` model weights (downloaded automatically when rerun). No external CSV is required. The third-layer/second-head attention matrix, labeled table, and heatmap are saved; verified result is 12 layers × 12 heads = 144 total.
 
 **Important:** Execution counts and stored outputs mean these notebook runs completed successfully; they do not establish that the models generalize well to unseen datasets.
 
@@ -45,4 +47,4 @@ All eleven numbered labs are available as Jupyter notebooks with their **actual 
 
 Open any linked `.ipynb` notebook above. GitHub's notebook preview renders printed output and embedded images directly below the relevant cells. Re-running is **not required** to inspect the saved results.
 
-The `.github/workflows/` folder and the `execute_lab6.py` / `execute_lab7.py` scripts document reproducible runs for the notebooks whose outputs were refreshed.
+The `.github/workflows/` folder and the `execute_lab6.py` / `execute_lab7.py` / `execute_lab12.py` scripts document reproducible runs for the notebooks whose outputs were refreshed.
