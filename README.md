@@ -1,10 +1,10 @@
-# Natural Language Processing — Labs 1–12
+# Natural Language Processing — Labs 1–13
 
 **Student:** Mohammad Abdalrouf Alnaghmoush  
 **Student ID:** 2230004028  
 **Course repository:** Natural Language Processing (9MA1)
 
-All twelve numbered labs are available as Jupyter notebooks with their **actual saved execution outputs**. Open any `.ipynb` file directly on GitHub to view printed results, tables, and embedded plots without running the notebook.
+All thirteen numbered labs are available as Jupyter notebooks with their **actual saved execution outputs**. Open any `.ipynb` file directly on GitHub to view printed results, tables, and embedded plots without running the notebook.
 
 ## Notebook submission index
 
@@ -23,8 +23,10 @@ All twelve numbered labs are available as Jupyter notebooks with their **actual 
 | [Lab 10](Lab10_Machine_Translation_Completed_Mohammad_Alnaghmoush.ipynb) | 13/13 | 12 | 1 |
 | [Lab 11](Lab11_Attention_with_RNN/Lab11_Attention_RNN_Completed_Mohammad_Alnaghmoush.ipynb) | 9/9 | 8 | 4 |
 | [Lab 12](Lab12_Transformers_Completed_Mohammad_Alnaghmoush.ipynb) | 10/10 | 8 | 1 |
+| [Lab 13 — Part 1](Lab13_Part1_Information_Retrieval_for_RAG_Completed.ipynb) | 8/8 | 6 | 0 |
+| [Lab 13 — Part 2](Lab13_Part2_Search_and_Retrieval_Completed.ipynb) | 7/7 | 5 | 0 |
 
-*Labs 1–11 were audited on November 4, 2026. Lab 12 was executed and verified on November 10, 2026. The repository contains thirteen notebooks because Lab 6 has two versions. All nonempty code cells are executed and no recorded cell errors remain.*
+*Labs 1–11 were audited on November 4, 2026. Lab 12 was executed and verified on November 10, 2026. Both parts of Lab 13 were executed and verified in a local Jupyter kernel using scikit-learn 1.8.0. The repository contains fifteen notebooks because Lab 6 has two versions and Lab 13 has two parts. All nonempty code cells are executed and no recorded cell errors remain.*
 
 ## Dataset and reproduction notes
 
@@ -40,6 +42,8 @@ All twelve numbered labs are available as Jupyter notebooks with their **actual 
 - **Lab 10:** Outputs were executed on 1,200 real English–French sentence pairs downloaded from the public Kaggle corpus; results are for a small educational model, not a production translator.
 - **Lab 11:** Uses the included [original Q&A dataset](Lab11_Attention_with_RNN/dataset/Lab_11_QnA_Dataset.csv) (168 examples); training results and attention visualizations are saved.
 - **Lab 12:** Uses real pretrained Hugging Face `distilbert-base-uncased-finetuned-sst-2-english` and `bert-base-uncased` model weights (downloaded automatically when rerun). No external CSV is required. The third-layer/second-head attention matrix, labeled table, and heatmap are saved; verified result is 12 layers × 12 heads = 144 total.
+
+- **Lab 13:** Both parts use the six supplied NLP notes, TF-IDF, and cosine similarity. Part 1 solves both exercises; Part 2 solves both practice questions, including adding a BERT note and rebuilding the index. All required outputs are saved; no external dataset is needed.
 
 **Important:** Execution counts and stored outputs mean these notebook runs completed successfully; they do not establish that the models generalize well to unseen datasets.
 
